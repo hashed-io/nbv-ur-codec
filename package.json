@@ -9,6 +9,10 @@
   },
   "author": "Sebastian Montero",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hashed-io/nbv-ur-codec"
+  },
   "devDependencies": {
     "eslint": "^8.15.0",
     "eslint-config-standard": "^17.0.0",
