@@ -12,6 +12,7 @@ describe('decodeXPub', () => {
     expect(result.xpubKey).toBe('Zpub756tPxxwHiYkYiT12G2WUD2cpAHyVWhjvKPbXoY5jDZSyo71yG5C14LCuwhycTTAzgTUcQfddR8FFTQ1bSWR6kzmNbMEaVzUrj4Lhxbonjo')
     expect(result.derivationPath).toBe("m/48'/0'/0'/2'")
     expect(result.masterFingerprint).toBe('01EBDA7D')
+    expect(result.fullXpub).toBe("[01EBDA7D/48'/0'/0'/2']Zpub756tPxxwHiYkYiT12G2WUD2cpAHyVWhjvKPbXoY5jDZSyo71yG5C14LCuwhycTTAzgTUcQfddR8FFTQ1bSWR6kzmNbMEaVzUrj4Lhxbonjo")
   })
 
   test('Invalid encoded XPub', async () => {

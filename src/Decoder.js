@@ -47,12 +47,21 @@ class Decoder {
     const key = hdKey.getKey()
     const data = Buffer.concat([version, depthBuf, parentFingerprint, indexBuf, chainCode, key])
 
-    const zpub = b58.encode(data)
-
-    const result = {}
-    result.xpubKey = zpub
-    result.masterFingerprint = cryptoAccount.getMasterFingerprint().toString('hex').toUpperCase()
-    result.derivationPath = derivationPath
+    const xpubKey = b58.encode(data)
+    const masterFingerprint = cryptoAccount.getMasterFingerprint().toString('hex').toUpperCase()
+    let fullXpub = xpubKey
+    if (
+      masterFingerprint != null && masterFingerprint !== '' &&
+        derivationPath != null && derivationPath !== ''
+    ) {
+      fullXpub = `[${masterFingerprint}${derivationPath.substring(1)}]${xpubKey}`
+    }
+    const result = {
+      xpubKey,
+      masterFingerprint,
+      derivationPath,
+      fullXpub
+    }
 
     return result
   }
