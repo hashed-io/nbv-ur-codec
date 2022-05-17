@@ -18,7 +18,8 @@ class Decoder {
    *    {
    *      xpubKey: 'Zpub756tPrxwHiYkYiT12G2WUD2cpAHyVWhjvKPbXoY5jDZSyo71yG5C14LCuwhycTTAzgTUcQfddR8FFTQ1bSWR6kzmNbMEaVzUrj4Lhxbonjo',
    *      masterFingerprint: '21EBDA7D',
-   *      derivationPath: "m/48'/0'/0'/2'"
+   *      derivationPath: "m/48'/0'/0'/2'",
+   *      fullXpub: [21EBDA7D/48'/0'/0'/2']Zpub756tPrxwHiYkYiT12G2WUD2cpAHyVWhjvKPbXoY5jDZSyo71yG5C14LCuwhycTTAzgTUcQfddR8FFTQ1bSWR6kzmNbMEaVzUrj4Lhxbonjo
    *    }
    */
   decodeXPub (payload) {
