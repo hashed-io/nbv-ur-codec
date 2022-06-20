@@ -1,6 +1,7 @@
 const { Bytes, CryptoPSBT } = require('@keystonehq/bc-ur-registry')
 const { Psbt } = require('bitcoinjs-lib')
 const QRCode = require('./QRCode')
+const Util = require('./Util')
 
 class Encoder {
   constructor () {
@@ -151,15 +152,22 @@ class Encoder {
   }
 
   /**
-   * Encodes a hex encoded psbt PSBT Uniform resource that can be used
+   * Encodes a hex or base64 encoded psbt PSBT Uniform resource that can be used
    * to generate the qr code from
-   * @param {string} psbtHex hex encoded psbt
+   * @param {string} psbt hex or base64 encoded psbt
    * @param {int} fragmentLength the max length of the encoded fragments
    * @returns {Array<string>} An array of uniform resources for the psbt
    */
-  encodePSBT (psbtHex, fragmentLength) {
-    Psbt.fromHex(psbtHex) // will throw if not PSBT hex
-    const data = Buffer.from(psbtHex, 'hex')
+  encodePSBT (psbt, fragmentLength) {
+    let data = null
+    try {
+      Psbt.fromHex(psbt)
+      data = Util.fromHex(psbt)
+    } catch (error) {
+      Psbt.fromBase64(psbt)
+      data = Util.fromBase64(psbt)
+    }
+
     const cryptoPSBT = new CryptoPSBT(data)
     const encoder = cryptoPSBT.toUREncoder(fragmentLength)
 
@@ -173,13 +181,13 @@ class Encoder {
   }
 
   /**
-   * Creates a series of QR codes from a hex encoded psbt
-   * @param {string} psbtHex hex encoded psbt
+   * Creates a series of QR codes from a hex or base64 encoded psbt
+   * @param {string} psbt hex or base64 encoded psbt
    * @param {int} fragmentLength the max length of the encoded fragments
    * @returns {Array<string>} an array of strings representing svg images of the qr codes
    */
-  psbtToQRCode (psbtHex, fragmentLength) {
-    const fragments = this.encodePSBT(psbtHex, fragmentLength)
+  psbtToQRCode (psbt, fragmentLength) {
+    const fragments = this.encodePSBT(psbt, fragmentLength)
     return this._toQRCode(fragments)
   }
 
