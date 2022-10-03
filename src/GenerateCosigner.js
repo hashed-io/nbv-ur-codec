@@ -159,6 +159,7 @@ const changeVersionBytes = function (xpub, targetFormat) {
   }
 };
 
+// unused functions
 const getFingerprint = function (xpub, targetFormat) {
   return byteArrayToHexString(bip32.fromBase58(changeVersionBytes(xpub, targetFormat), NETWORK_TYPES[targetFormat]).fingerprint);
 }
@@ -171,7 +172,7 @@ const getDepth = function (xpub, targetFormat) {
   return bip32.fromBase58(changeVersionBytes(xpub, targetFormat), NETWORK_TYPES[targetFormat]).depth;
 }
 
-const example_bip32 = () => {
+const generateCosigner = () => {
   // const zp = b'\x04\xb2\x43\x0c'
   const network = bitcoin.networks.bitcoin //use networks.testnet for testnet
 
@@ -184,10 +185,6 @@ const example_bip32 = () => {
   const xfp = byteArrayToHexString(root.fingerprint).toUpperCase();
   const Zpub = changeVersionBytes(xpub, 'Zpub');
 
-  console.log('Root info');
-  console.log(xfp); // ! need to be exported
-  console.log(Zpub); // ! need to be exported
-
   return {
     seed: mnemonic,
     Zpub: Zpub,
@@ -196,4 +193,4 @@ const example_bip32 = () => {
   }
 };
 
-example_bip32()
+module.exports = generateCosigner
