@@ -7,7 +7,7 @@ class Util {
    * @param {string} hex encoded string
    * @returns {boolean} Whether string is hex encoded
    */
-  static isHex (hex) {
+  static isHex(hex) {
     return isHexRegex.test(hex)
   }
 
@@ -16,7 +16,7 @@ class Util {
    * @param {string} hex encoded string
    * @returns {Buffer}
    */
-  static fromHex (hex) {
+  static fromHex(hex) {
     return Buffer.from(hex, 'hex')
   }
 
@@ -25,7 +25,7 @@ class Util {
    * @param {string} base64 encoded string
    * @returns {Buffer}
    */
-  static fromBase64 (base64) {
+  static fromBase64(base64) {
     return Buffer.from(base64, 'base64')
   }
 
@@ -34,7 +34,7 @@ class Util {
    * @param {Buffer} buff
    * @returns {string} hex encoded string
    */
-  static toHex (buff) {
+  static toHex(buff) {
     return buff.toString('hex')
   }
 
@@ -43,7 +43,7 @@ class Util {
    * @param {Buffer} buff
    * @returns {string} base64 encoded string
    */
-  static toBase64 (buff) {
+  static toBase64(buff) {
     return buff.toString('base64')
   }
 
@@ -52,7 +52,7 @@ class Util {
    * @param {string} hex
    * @returns {string} base64 encoded string
    */
-  static hexToBase64 (hex) {
+  static hexToBase64(hex) {
     return this.toBase64(this.fromHex(hex))
   }
 
@@ -61,8 +61,15 @@ class Util {
    * @param {string} base64
    * @returns {string} hex encoded string
    */
-  static base64ToHex (base64) {
+  static base64ToHex(base64) {
     return this.toHex(this.fromBase64(base64))
+  }
+
+  // https://stackoverflow.com/questions/40031688/javascript-arraybuffer-to-hex
+  static byteArrayToHexString = (byteArray) => {
+    return Array.from(byteArray, function (byte) {
+      return ('0' + (byte & 0xFF).toString(16)).slice(-2);
+    }).join('')
   }
 }
 

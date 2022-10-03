@@ -3,6 +3,7 @@ let b58 = require('bs58check');
 const { BIP32Factory } = require('bip32')
 const bip39 = require('bip39')
 const bitcoin = require('bitcoinjs-lib')
+const Util = require('./Util')
 
 const bip32 = BIP32Factory(ecc)
 
@@ -133,64 +134,59 @@ const NETWORK_TYPES = {
     wif: 0xef,
   }
 };
+class GenerateCosigner {
 
-// https://stackoverflow.com/questions/40031688/javascript-arraybuffer-to-hex
-function byteArrayToHexString(byteArray) {
-  return Array.from(byteArray, function (byte) {
-    return ('0' + (byte & 0xFF).toString(16)).slice(-2);
-  }).join('')
+  /**
+   * Changes the version of the xpub to the version of the network
+   * @param {string} xpub extended public key to be changed
+   * @param {string} targetFormat ypub, Ypub, zpub, Zpub, tpub, upub, Upub, vpub, Vpub
+   * @returns 
+   */
+
+  static changeVersionBytes = (xpub, targetFormat) => {
+    if (!prefixes.has(targetFormat)) {
+      return "Invalid target version.";
+    }
+
+    xpub = xpub.trim();
+
+    try {
+      var data = b58.decode(xpub);
+      data = data.slice(4);
+      data = Buffer.concat([Buffer.from(prefixes.get(targetFormat), 'hex'), data]);
+      return b58.encode(data);
+    } catch (err) {
+      return "Invalid extended public key.";
+    }
+  };
+
+  /**
+   * Create a new cosigner and a new mnemonic
+   * @returns {Object} An object containing the data to create a new cosigner
+   */
+
+  static getCosigner = () => {
+    // const zp = b'\x04\xb2\x43\x0c'
+    const network = bitcoin.networks.bitcoin //use networks.testnet for testnet
+
+    const path = `m/48'/0'/0'/2'` // Use m/49'/1'/0'/0 for testnet
+    let mnemonic = bip39.generateMnemonic();
+    const seed = bip39.mnemonicToSeedSync(mnemonic);
+    let root = bip32.fromSeed(seed, network);
+    const xpub = root.derivePath(path).neutered().toBase58();
+
+    const xfp = Util.byteArrayToHexString(root.fingerprint).toUpperCase();
+    const Zpub = this.changeVersionBytes(xpub, 'Zpub');
+
+    return {
+      seed: mnemonic,
+      Zpub: Zpub,
+      xfp: xfp,
+      path: path
+    }
+  };
+
 }
 
-const changeVersionBytes = function (xpub, targetFormat) {
-  if (!prefixes.has(targetFormat)) {
-    return "Invalid target version";
-  }
 
-  // trim whitespace
-  xpub = xpub.trim();
-
-  try {
-    var data = b58.decode(xpub);
-    data = data.slice(4);
-    data = Buffer.concat([Buffer.from(prefixes.get(targetFormat), 'hex'), data]);
-    return b58.encode(data);
-  } catch (err) {
-    return "Invalid extended public key! Please double check that you didn't accidentally paste extra data.";
-  }
-};
-
-// unused functions
-const getFingerprint = function (xpub, targetFormat) {
-  return byteArrayToHexString(bip32.fromBase58(changeVersionBytes(xpub, targetFormat), NETWORK_TYPES[targetFormat]).fingerprint);
-}
-
-const getParentFingerprint = function (xpub, targetFormat) {
-  return bip32.fromBase58(changeVersionBytes(xpub, targetFormat), NETWORK_TYPES[targetFormat]).parentFingerprint.toString(16);
-}
-
-const getDepth = function (xpub, targetFormat) {
-  return bip32.fromBase58(changeVersionBytes(xpub, targetFormat), NETWORK_TYPES[targetFormat]).depth;
-}
-
-const generateCosigner = () => {
-  // const zp = b'\x04\xb2\x43\x0c'
-  const network = bitcoin.networks.bitcoin //use networks.testnet for testnet
-
-  const path = `m/48'/0'/0'/2'` // Use m/49'/1'/0'/0 for testnet // ! needed to be exported
-  let mnemonic = bip39.generateMnemonic() // ! need to be exported
-  const seed = bip39.mnemonicToSeedSync('pledge world throw hobby cross height sure elder rough weekend share sausage')
-  let root = bip32.fromSeed(seed, network)
-  const xpub = root.derivePath(path).neutered().toBase58()
-
-  const xfp = byteArrayToHexString(root.fingerprint).toUpperCase();
-  const Zpub = changeVersionBytes(xpub, 'Zpub');
-
-  return {
-    seed: mnemonic,
-    Zpub: Zpub,
-    xfp: xfp,
-    path: path
-  }
-};
-
-module.exports = generateCosigner
+module.exports = GenerateCosigner
