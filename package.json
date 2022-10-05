@@ -1,6 +1,6 @@
 {
   "name": "@smontero/nbv-ur-codec",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Enables the encoding and decoding from/to Uniform Resources of various btc related components(vaults,xpubs and psbts)",
   "main": "src/index.js",
   "scripts": {
