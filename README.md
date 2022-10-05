@@ -67,7 +67,9 @@ Import the GenerateCosigner object
 Get a Zpub address with a `m/48'/0'/0'/2'` derivation path:
 
 ```js
-const new_cosigner = GenerateCosigner.getCosigner()
+GenerateCosigner.getCosigner().then((cosigner) => {
+  console.log(cosigner)
+})
 ```
 
 This returns an object with the following properties:
