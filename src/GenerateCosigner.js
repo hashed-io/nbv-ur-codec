@@ -5,8 +5,6 @@ const bip39 = require('bip39')
 const bitcoin = require('bitcoinjs-lib')
 const Util = require('./Util')
 
-const bip32 = BIP32Factory(ecc)
-
 const prefixes = new Map(
   [
     ['xpub', '0488b21e'],
@@ -135,6 +133,14 @@ const NETWORK_TYPES = {
   }
 };
 class GenerateCosigner {
+  constructor() {
+    this.resolveECC()
+  }
+
+  resolveECC = async () => {
+    const eccT = await ecc
+    this.bip32T = BIP32Factory(eccT)
+  };
 
   /**
    * Changes the version of the xpub to the version of the network
@@ -143,7 +149,7 @@ class GenerateCosigner {
    * @returns 
    */
 
-  static changeVersionBytes = (xpub, targetFormat) => {
+  changeVersionBytes = (xpub, targetFormat) => {
     if (!prefixes.has(targetFormat)) {
       return "Invalid target version.";
     }
@@ -165,14 +171,14 @@ class GenerateCosigner {
    * @returns {Object} An object containing the data to create a new cosigner
    */
 
-  static getCosigner = () => {
+  getCosigner = () => {
     // const zp = b'\x04\xb2\x43\x0c'
     const network = bitcoin.networks.bitcoin //use networks.testnet for testnet
 
     const path = `m/48'/0'/0'/2'` // Use m/49'/1'/0'/0 for testnet
     let mnemonic = bip39.generateMnemonic();
     const seed = bip39.mnemonicToSeedSync(mnemonic);
-    let root = bip32.fromSeed(seed, network);
+    let root = this.bip32T.fromSeed(seed, network);
     const xpub = root.derivePath(path).neutered().toBase58();
 
     const xfp = Util.byteArrayToHexString(root.fingerprint).toUpperCase();
